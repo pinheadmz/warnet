@@ -11,6 +11,7 @@ import re
 from docker.models.containers import Container
 from templates import TEMPLATES
 from services.dns_seed import IP_ADDR as DNS_IP_ADDR
+from warnet.lnnode import LNNode
 from warnet.utils import (
     exponential_backoff,
     generate_ipv4_addr,
@@ -45,6 +46,7 @@ class Tank:
         self._container_name = None
         self._exporter_name = None
         self.config_dir = Path()
+        self.lnnode = None
 
     def __str__(self) -> str:
         return (
@@ -82,16 +84,18 @@ class Tank:
         self.config_dir = self.warnet.config_dir / str(self.suffix)
         self.config_dir.mkdir(parents=True, exist_ok=True)
         self.write_torrc()
+        self.lnnode = LNNode(self.warnet, self)
         return self
 
     @classmethod
-    def from_docker_compose_service(cls, service, network):
+    def from_docker_compose_service(cls, warnet, service, network):
         rex = fr"{network}_{CONTAINER_PREFIX_BITCOIND}_([0-9]{{6}})"
         match = re.match(rex, service["container_name"])
         if match is None:
             return None
 
         self = cls()
+        self.warnet = warnet
         self.index = int(match.group(1))
         self.docker_network = network
         self._ipv4 = service["networks"][self.docker_network]["ipv4_address"]
@@ -99,6 +103,7 @@ class Tank:
             self.version = service["build"]["args"]["BITCOIN_VERSION"]
         else:
             self.version = f"{service['build']['args']['REPO']}#{service['build']['args']['BRANCH']}"
+        self.lnnode = LNNode(self.warnet, self)
         return self
 
     @property
@@ -183,6 +188,9 @@ class Tank:
         conf[self.bitcoin_network].append(("rpcuser", self.rpc_user))
         conf[self.bitcoin_network].append(("rpcpassword", self.rpc_password))
         conf[self.bitcoin_network].append(("rpcport", self.rpc_port))
+
+        conf[self.bitcoin_network].append(("zmqpubrawblock", "tcp://0.0.0.0:28332"))
+        conf[self.bitcoin_network].append(("zmqpubrawtx", "tcp://0.0.0.0:28333"))
 
         conf_file = dump_bitcoin_conf(conf)
         path = self.config_dir / f"bitcoin.conf"
@@ -270,6 +278,8 @@ class Tank:
         #     "ports": [f"{8335 + self.index}:9332"],
         #     "networks": [self.docker_network],
         # }
+
+        self.lnnode.add_services(services)
 
     def add_scrapers(self, scrapers):
         scrapers.append(
