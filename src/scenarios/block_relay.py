@@ -21,11 +21,12 @@ class BlockRelay(WarnetTestFramework):
             for t in TYPES:
                 addr = miner.getnewaddress("", t)
                 addrs.append(addr)
+                self.log.info(f"Got address from node {i}: {addr}")
         self.log.info(f"Collected {len(addrs)} addrs from {self.num_nodes - 2} nodes")
 
         # Generate one block to latch out of IBD and start addr gossip
         self.log.info("Generating block #1 from node 2")
-        self.generatetoaddress(self.nodes[2], 1, addrs[0])
+        self.nodes[2].generatetoaddress(1, addrs[0], invalid_call=False)
 
         # Connect to target nodes
         self.log.info("Encouraging outbound connections to target nodes")
@@ -40,7 +41,7 @@ class BlockRelay(WarnetTestFramework):
             node = (i % (self.num_nodes - 2)) + 2
             self.log.info(f"Generating block {i}/{blocks} from node {node}")
             addr = self.nodes[node].getnewaddress()
-            self.generatetoaddress(self.nodes[node], 1, addr)
+            self.nodes[node].generatetoaddress(1, addr, invalid_call=False)
 
         # Random transaction blizzard
         while True:
@@ -58,7 +59,7 @@ class BlockRelay(WarnetTestFramework):
                     self.log.info(f"Send tx failed: {e}")
             node = randrange(2, self.num_nodes)
             self.log.info(f"Generating block from node {node}")
-            self.generatetoaddress(self.nodes[node], 1, choice(addrs))
+            self.nodes[node].generatetoaddress(1, choice(addrs), invalid_call=False)
 
 
 
