@@ -22,7 +22,7 @@ logger = logging.getLogger("tank")
 
 
 class Tank:
-    DEFAULT_BUILD_ARGS = "--disable-tests --with-incompatible-bdb --without-gui --disable-bench --disable-fuzz-binary --enable-suppress-external-warnings --enable-debug "
+    DEFAULT_BUILD_ARGS = "--disable-tests --with-incompatible-bdb --without-gui --disable-bench --disable-fuzz-binary --enable-suppress-external-warnings "
 
     def __init__(self, index:int, config_dir: Path, warnet):
         self.index = index
