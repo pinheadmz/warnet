@@ -31,8 +31,8 @@ class BlockRelay(WarnetTestFramework):
         # Connect to target nodes
         self.log.info("Encouraging outbound connections to target nodes")
         for i in range(2, self.num_nodes):
-            self.nodes[i].addpeeraddress(self.nodes[0].rpchost, 18444)
-            self.nodes[i].addpeeraddress(self.nodes[1].rpchost, 18444)
+            self.nodes[i].addnode(self.nodes[0].rpchost, "add")
+            self.nodes[i].addnode(self.nodes[1].rpchost, "add")
 
         # Generate enough blocks so each node has mature coinbase coins
         miners = self.num_nodes - 2
