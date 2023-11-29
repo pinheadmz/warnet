@@ -14,25 +14,22 @@ class BlockRelay(WarnetTestFramework):
         self.num_nodes = 1
 
     def run_test(self):
-        # Get addrs of different types from all nodes
-        addrs = []
-        for i in range(2, self.num_nodes):
-            miner = ensure_miner(self.nodes[i])
-            for t in TYPES:
-                addr = miner.getnewaddress("", t)
-                addrs.append(addr)
-                self.log.info(f"Got address from node {i}: {addr}")
-        self.log.info(f"Collected {len(addrs)} addrs from {self.num_nodes - 2} nodes")
-
-        # Generate one block to latch out of IBD and start addr gossip
-        self.log.info("Generating block #1 from node 2")
-        self.nodes[2].generatetoaddress(1, addrs[0], invalid_call=False)
+        # Create wallets
+        for node in self.nodes:
+            self.log.info(f"Creating wallet for node {node.index}")
+            node.createwallet("miner", descriptors=True)
 
         # Connect to target nodes
         self.log.info("Encouraging outbound connections to target nodes")
         for i in range(2, self.num_nodes):
-            self.nodes[i].addnode(self.nodes[0].rpchost, "add")
-            self.nodes[i].addnode(self.nodes[1].rpchost, "add")
+            try:
+                self.nodes[i].addnode(self.nodes[0].rpchost, "add")
+            except Exception as e:
+                self.log.info(f"addnode 0 failed: {e}")
+            try:
+                self.nodes[i].addnode(self.nodes[1].rpchost, "add")
+            except Exception as e:
+                self.log.info(f"addnode 1 failed: {e}")
 
         # Generate enough blocks so each node has mature coinbase coins
         miners = self.num_nodes - 2
@@ -50,7 +47,10 @@ class BlockRelay(WarnetTestFramework):
                 amounts = {}
                 outputs = randrange(10) + 1
                 for _ in range(outputs):
-                    amounts[choice(addrs)] = "0.00001"
+                    node = choice(self.nodes)
+                    addr = node.getnewaddress("", choice(TYPES))
+                    amounts[addr] = "0.00001"
+                    self.log.info(f" got addr from node {node.index}: {addr}")
                 node = randrange(2, self.num_nodes)
                 self.log.info(f"Sending tx {n}/{txs} with {outputs} outputs from node {node}")
                 try:
@@ -59,7 +59,7 @@ class BlockRelay(WarnetTestFramework):
                     self.log.info(f"Send tx failed: {e}")
             node = randrange(2, self.num_nodes)
             self.log.info(f"Generating block from node {node}")
-            self.nodes[node].generatetoaddress(1, choice(addrs), invalid_call=False)
+            self.nodes[node].generatetoaddress(1, addr, invalid_call=False)
 
 
 
