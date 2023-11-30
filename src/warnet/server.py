@@ -260,8 +260,7 @@ class Server():
         def thread_start(wn):
             try:
                 wn.generate_deployment()
-                # grep: disable-exporters
-                # wn.write_prometheus_config()
+
                 wn.write_fork_observer_config()
                 wn.warnet_build()
                 wn.warnet_up()

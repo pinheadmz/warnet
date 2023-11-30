@@ -34,6 +34,7 @@ class Tank:
         self.conf = ""
         self.conf_file = None
         self.netem = None
+        self.exporter = False
         self.rpc_port = 18443
         self.rpc_user = "warnet_user"
         self.rpc_password = "2themoon"
@@ -75,6 +76,7 @@ class Tank:
             self.version = version
         self.conf = node.get("bitcoin_config", self.conf)
         self.netem = node.get("tc_netem", self.netem)
+        self.exporter = node.get("exporter", self.exporter)
         self.extra_build_args = node.get("build_args", self.extra_build_args)
         self.config_dir = self.warnet.config_dir / str(self.suffix)
         self.config_dir.mkdir(parents=True, exist_ok=True)

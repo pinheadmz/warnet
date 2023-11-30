@@ -19,8 +19,8 @@ class BlockRelay(WarnetTestFramework):
             self.log.info(f"Creating wallet for node {node.index}")
             node.createwallet("miner", descriptors=True)
 
-        # Connect to target nodes
-        self.log.info("Encouraging outbound connections to target nodes")
+        # Full connect to target nodes
+        self.log.info("Creating full connections to target nodes")
         for i in range(2, self.num_nodes):
             try:
                 self.nodes[i].addnode(self.nodes[0].rpchost, "add")
@@ -39,6 +39,19 @@ class BlockRelay(WarnetTestFramework):
             self.log.info(f"Generating block {i}/{blocks} from node {node}")
             addr = self.nodes[node].getnewaddress()
             self.nodes[node].generatetoaddress(1, addr, invalid_call=False)
+
+        # By now the full connections should be as full as possible
+        # top em off with block-relay
+        self.log.info("Creating full connections to target nodes")
+        for i in range(2, self.num_nodes):
+            try:
+                self.nodes[i].addconnection(self.nodes[0].rpchost, "block-relay-only")
+            except Exception as e:
+                self.log.info(f"addconnection 0 failed: {e}")
+            try:
+                self.nodes[i].addconnection(self.nodes[1].rpchost, "block-relay-only")
+            except Exception as e:
+                self.log.info(f"addconnection 1 failed: {e}")
 
         # Random transaction blizzard
         while True:

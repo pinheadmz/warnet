@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d8" for="node" attr.name="exporter" attr.type="boolean" />
   <key id="d7" for="node" attr.name="peers" attr.type="long" />
   <key id="d6" for="node" attr.name="tc_netem" attr.type="string" />
   <key id="d5" for="node" attr.name="bitcoin_config" attr.type="string" />
@@ -17,15 +18,17 @@
       <data key="d4">pinheadmz/bitcoin#peer-memory-increase-block-relay</data>
       <data key="d5">-uacomment=PR_28463</data>
       <data key="d6" />
+      <data key="d8">true</data>
     </node>
     <node id="1">
       <data key="d0">T</data>
       <data key="d1">14</data>
       <data key="d2">0.062227179953400276</data>
       <data key="d3">0.005505921184984039</data>
-      <data key="d4">25.1</data>
+      <data key="d4">amitiuttarwar/bitcoin#peer-memory</data>
       <data key="d5">-uacomment=CONTROL</data>
       <data key="d6" />
+      <data key="d8">true</data>
     </node>
     <node id="2">
       <data key="d0">T</data>
