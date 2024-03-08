@@ -20,6 +20,7 @@ from warnet.utils import (
     get_architecture,
     parse_raw_messages,
     set_execute_permission,
+    get_architecture,
 )
 
 from .services import SERVICES

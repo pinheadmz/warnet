@@ -11,8 +11,8 @@
   <graph edgedefault="directed">
     <data key="tor">true</data>
     <node id="0">
-        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
-        <data key="bitcoin_config">-uacomment=w0 -onion=localhost:9050</data>
+        <data key="image">warnet/bitcoin-core:private_broadcast</data>
+        <data key="bitcoin_config">-uacomment=w0_PR29415 -onion=localhost:9050 -privatebroadcast=1 -debug=net -debug=privatebroadcast -listenonion=0</data>
         <data key="tor">true</data>
     </node>
     <node id="1">
@@ -50,6 +50,103 @@
         <data key="bitcoin_config">-uacomment=w7 -onion=localhost:9050</data>
         <data key="tor">true</data>
     </node>
-    <!-- no edges to start -->
+    <node id="8">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w8 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="9">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w9 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="10">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w10 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="11">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w11 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="12">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w12 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="13">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w13 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="14">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w14 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="15">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w15 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="16">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w16 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="17">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w17 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="18">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w18 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="19">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w19 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <node id="20">
+        <data key="image">pinheadmz/bitcoin:26.0_with_tor</data>
+        <data key="bitcoin_config">-uacomment=w20 -onion=localhost:9050</data>
+        <data key="tor">true</data>
+    </node>
+    <!-- connect PR node to others to fill outbound -->
+    <edge id="1" source="0" target="1"></edge>
+    <edge id="2" source="0" target="2"></edge>
+    <edge id="3" source="0" target="3"></edge>
+    <edge id="4" source="0" target="4"></edge>
+    <edge id="5" source="0" target="5"></edge>
+    <edge id="6" source="0" target="6"></edge>
+    <edge id="7" source="0" target="7"></edge>
+    <edge id="8" source="0" target="8"></edge>
+    <edge id="9" source="0" target="9"></edge>
+    <edge id="10" source="0" target="10"></edge>
+    <edge id="11" source="0" target="11"></edge>
+    <!-- connect all other nodes in a ring to start -->
+    <edge id="12" source="1" target="2"></edge>
+    <edge id="13" source="2" target="3"></edge>
+    <edge id="14" source="3" target="4"></edge>
+    <edge id="15" source="4" target="5"></edge>
+    <edge id="16" source="5" target="6"></edge>
+    <edge id="17" source="6" target="7"></edge>
+    <edge id="18" source="7" target="8"></edge>
+    <edge id="19" source="8" target="9"></edge>
+    <edge id="20" source="9" target="10"></edge>
+    <edge id="21" source="10" target="11"></edge>
+    <edge id="22" source="11" target="12"></edge>
+    <edge id="23" source="12" target="13"></edge>
+    <edge id="24" source="13" target="14"></edge>
+    <edge id="25" source="14" target="15"></edge>
+    <edge id="26" source="15" target="16"></edge>
+    <edge id="28" source="16" target="17"></edge>
+    <edge id="29" source="17" target="18"></edge>
+    <edge id="30" source="18" target="19"></edge>
+    <edge id="31" source="19" target="20"></edge>
+    <edge id="32" source="20" target="0"></edge>
   </graph>
 </graphml>
