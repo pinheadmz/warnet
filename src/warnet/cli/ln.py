@@ -1,7 +1,6 @@
 import click
 
-from .rpc import rpc_call
-
+from .process import run_command
 
 @click.group(name="ln")
 def ln():
@@ -9,31 +8,28 @@ def ln():
 
 
 @ln.command(context_settings={"ignore_unknown_options": True})
-@click.argument("node", type=int)
-@click.argument("command", type=str, required=True, nargs=-1)
-@click.option("--network", default="warnet", show_default=True, type=str)
-def rpc(node: int, command: tuple, network: str):
+@click.argument("pod", type=str)
+@click.argument("command", type=str, required=True)
+def rpc(pod: str, command: str):
     """
-    Call lightning cli rpc <command> on <node> in [network]
+    Call lightning cli rpc <command> on <ln pod name>
     """
-    print(
-        rpc_call(
-            "tank_lncli",
-            {"network": network, "node": node, "command": command},
-        )
-    )
+    print(_rpc(pod, command))
+
+
+def _rpc(pod: str, command: str):
+    # TODO: when we add back cln we'll need to describe the pod,
+    # get a label with implementation type and then adjust command
+    cmd = f"kubectl exec {pod} -- lncli --network=regtest {command}"
+    return run_command(cmd)
 
 
 @ln.command(context_settings={"ignore_unknown_options": True})
-@click.argument("node", type=int)
-@click.option("--network", default="warnet", show_default=True, type=str)
-def pubkey(node: int, network: str):
+@click.argument("pod", type=str)
+def pubkey(pod: str,):
     """
-    Get lightning node pub key on <node> in [network]
+    Get lightning node pub key from <ln pod name>
     """
-    print(
-        rpc_call(
-            "tank_ln_pub_key",
-            {"network": network, "node": node},
-        )
-    )
+    ## TODO: again here, cln will need a different command
+    info = _rpc(pod, "getinfo")
+    print(info["identity_pubkey"])
