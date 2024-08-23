@@ -20,6 +20,7 @@ NETWORK_FILE = "network.yaml"
 DEFAULTS_FILE = "node-defaults.yaml"
 HELM_COMMAND = "helm upgrade --install --create-namespace"
 BITCOIN_CHART_LOCATION = str(files("charts").joinpath("bitcoincore"))
+LND_CHART_LOCATION = str(files("charts").joinpath("lnd"))
 
 
 @click.group(name="network")
@@ -93,9 +94,10 @@ def deploy(network_dir: Path, logging: bool):
         print(f"Deploying node: {node.get('name')}")
         try:
             temp_override_file_path = ""
+            extra_conf_file_path = ""
             node_name = node.get("name")
-            # all the keys apart from name
-            node_config_override = {k: v for k, v in node.items() if k != "name"}
+            # all the keys apart from name and lnd
+            node_config_override = {k: v for k, v in node.items() if k != "name" and k != "lnd"}
 
             cmd = f"{HELM_COMMAND} {node_name} {BITCOIN_CHART_LOCATION} --namespace {namespace} -f {defaults_file_path}"
 
@@ -110,12 +112,41 @@ def deploy(network_dir: Path, logging: bool):
             if not stream_command(cmd):
                 print(f"Failed to run Helm command: {cmd}")
                 return
+
+            lnd = node.get("lnd")
+            if lnd:
+                lnd_name = f"{node_name}-lnd"
+
+                extra_conf = {
+                    "config": ('\n').join([
+                        f"bitcoind.rpchost={node_name}:18443",
+                        f"bitcoind.zmqpubrawblock=tcp://{node_name}:28332",
+                        f"bitcoind.zmqpubrawtx=tcp://{node_name}:28333",
+                        f"alias={lnd_name}",
+                        f"externalhosts={lnd_name}",
+                        f"tlsextradomain={lnd_name}"
+                    ])
+                }
+
+                with tempfile.NamedTemporaryFile(
+                    mode="w", suffix=".yaml", delete=False
+                ) as temp_file:
+                    yaml.dump(extra_conf, temp_file)
+                    extra_conf_file_path = Path(temp_file.name)
+
+                cmd = f"{HELM_COMMAND} {lnd_name} {LND_CHART_LOCATION} --namespace {namespace} --set bitcoin_tank_name={node_name},lnd_name={lnd_name} -f {extra_conf_file_path}"
+                if not stream_command(cmd):
+                    print(f"Failed to run Helm command: {cmd}")
+                    return
+
         except Exception as e:
             print(f"Error: {e}")
             return
         finally:
             if temp_override_file_path:
                 Path(temp_override_file_path).unlink()
+            if extra_conf_file_path:
+                Path(extra_conf_file_path).unlink()
 
 
 @network.command()
@@ -126,6 +157,7 @@ def down():
     else:
         print("Warnet logging NOT deleted")
     tanks = get_mission("tank")
+    tanks.extend(get_mission("lightning"))
     for tank in tanks:
         cmd = f"helm uninstall {tank.metadata.name}"
         stream_command(cmd)
