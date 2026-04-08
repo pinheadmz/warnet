@@ -53,6 +53,7 @@ RUN set -ex \
     && resolved=$(git rev-parse --verify "$REF^{commit}") \
     && git checkout "$resolved" \
 
+    # Build
     && git apply /tmp/isroutable.patch \
     && git apply /tmp/addrman.patch \
     && sed -i s:sys/fcntl.h:fcntl.h: src/compat/compat.h \
@@ -66,7 +67,6 @@ RUN set -ex \
     && rm -f ${BITCOIN_PREFIX}/lib/libbitcoinconsensus.a \
     && rm -f ${BITCOIN_PREFIX}/lib/libbitcoinconsensus.so.0.0.0
 
-# Final clean stage
 FROM alpine:3.20
 ARG UID=100
 ARG GID=101
